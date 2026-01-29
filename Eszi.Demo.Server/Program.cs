@@ -8,6 +8,8 @@ namespace Eszi.Demo.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services
+                .AddAuthenticationServices(builder.Configuration);
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -36,8 +38,8 @@ namespace Eszi.Demo.Server
                     .AllowAnyHeader()
             );
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
