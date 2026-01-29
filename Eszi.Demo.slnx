@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="eszi.demo.client/eszi.demo.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Eszi.Demo.Server/Eszi.Demo.Server.csproj" />
+</Solution>

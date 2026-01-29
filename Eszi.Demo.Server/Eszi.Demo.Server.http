@@ -1,0 +1,6 @@
+@Eszi.Demo.Server_HostAddress = http://localhost:5275
+
+GET {{Eszi.Demo.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
