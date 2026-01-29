@@ -14,6 +14,8 @@ namespace Eszi.Demo.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors();
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
@@ -25,6 +27,14 @@ namespace Eszi.Demo.Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors(builder =>
+                builder
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            );
 
             app.UseAuthorization();
 
