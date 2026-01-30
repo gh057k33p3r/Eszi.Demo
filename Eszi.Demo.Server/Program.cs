@@ -1,5 +1,7 @@
 
+using Eszi.Demo.Database;
 using Eszi.Demo.Server.Middlewares;
+using Microsoft.EntityFrameworkCore;
 
 namespace Eszi.Demo.Server
 {
@@ -20,7 +22,15 @@ namespace Eszi.Demo.Server
 
             builder.Services.AddCors();
 
+            builder.Services.AddDbContext<CoreDbContext>(options => 
+                options.UseSqlite(builder.Configuration.GetConnectionString(nameof(CoreDbContext)))
+            );
+
             var app = builder.Build();
+
+            using var scope = app.Services.CreateScope();
+            using var coreDbContext = scope.ServiceProvider.GetRequiredService<CoreDbContext>();
+            coreDbContext.Database.Migrate();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

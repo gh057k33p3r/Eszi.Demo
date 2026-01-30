@@ -1,10 +1,20 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { axiosInstance } from "../../axios";
 
 export function LoginForm() {
   const [email, setEmail] = useState<string>("admin");
   const [password, setPassword] = useState<string>("password");
 
-  const loginAsync = async () => {};
+  const { mutateAsync: loginAsync } = useMutation({
+    mutationFn: () => {
+      return axiosInstance
+        .post("/auth/login", { email, password })
+        .then((resp) => resp.data);
+    },
+  });
+
+  const queryClient = useQueryClient();
 
   return (
     <>
@@ -35,6 +45,7 @@ export function LoginForm() {
           type="button"
           onClick={async () => {
             await loginAsync();
+            queryClient.invalidateQueries();
           }}
           value="Belépés"
         />
