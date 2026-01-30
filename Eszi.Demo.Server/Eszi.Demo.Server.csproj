@@ -16,6 +16,7 @@
     <ProjectReference Include="..\eszi.demo.client\eszi.demo.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\Eszi.Demo.Database\Eszi.Demo.Database.csproj" />
   </ItemGroup>
 
 </Project>
