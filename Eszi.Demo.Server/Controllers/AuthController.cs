@@ -33,7 +33,40 @@ namespace Eszi.Demo.Server.Controllers
 
             var accessToken = GenerateJwtToken(request.Email);
 
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTime.UtcNow.AddMinutes(options.Value.ExpiresInMinutes),
+                SameSite = SameSiteMode.Lax
+            };
+
+            HttpContext.Response.Cookies.Append(Constants.AccessTokenCookieKey, accessToken, cookieOptions);
+
             return Ok(accessToken);
+        }
+
+        [Authorize]
+        [HttpGet("cookietoken")]
+        public async Task<ActionResult<string>> GetTokenFromCookie()
+        {
+            Request.Cookies.TryGetValue(Constants.AccessTokenCookieKey, out string? accessToken);
+
+            if(string.IsNullOrEmpty(accessToken))
+            {
+                return Unauthorized();
+            }
+
+            return Ok(accessToken);
+        }
+
+        [Authorize]
+        [HttpPost("Logout")]
+        public ActionResult Logout()
+        {
+            HttpContext.Response.Cookies.Delete(Constants.AccessTokenCookieKey);
+
+            return Ok();
         }
 
         private string GenerateJwtToken(string email)

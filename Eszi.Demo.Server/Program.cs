@@ -1,4 +1,6 @@
 
+using Eszi.Demo.Server.Middlewares;
+
 namespace Eszi.Demo.Server
 {
     public class Program
@@ -38,6 +40,7 @@ namespace Eszi.Demo.Server
                     .AllowAnyHeader()
             );
 
+            app.UseMiddleware<AuthorizationHeaderSetterMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 
