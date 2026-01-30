@@ -3,5 +3,6 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="Eszi.Demo.Database/Eszi.Demo.Database.csproj" Id="0a9a18c7-e81a-4d90-b85d-fc65ba0763de" />
   <Project Path="Eszi.Demo.Server/Eszi.Demo.Server.csproj" />
 </Solution>

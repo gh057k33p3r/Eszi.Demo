@@ -1,4 +1,5 @@
-﻿using Eszi.Demo.Server.Dtos.Auth;
+﻿using Eszi.Demo.Database;
+using Eszi.Demo.Server.Dtos.Auth;
 using Eszi.Demo.Server.Dtos.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,18 +16,21 @@ namespace Eszi.Demo.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IOptions<JwtOptions> options;
+        private readonly CoreDbContext coreDbContext;
 
-        public AuthController(IOptions<JwtOptions> options)
+        public AuthController(IOptions<JwtOptions> options, CoreDbContext coreDbContext)
         {
             this.options = options;
+            this.coreDbContext = coreDbContext;
         }
 
         [HttpPost("Login")]
         [AllowAnonymous]
         public ActionResult Login(LoginRequest request)
         {
-            // Fake adatbázis
-            if(request.Email != "admin" || request.Password != "password")
+            var user = coreDbContext.Users.SingleOrDefault(u => u.Email == request.Email && u.Password == request.Password);
+
+            if(user == null)
             {
                 return Unauthorized();
             }
