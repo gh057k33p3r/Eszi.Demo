@@ -3,13 +3,12 @@ using Eszi.Demo.Database.Models;
 using Eszi.Demo.Server.Dtos.Auth;
 using Eszi.Demo.Server.Dtos.Options;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -28,17 +27,44 @@ namespace Eszi.Demo.Server.Controllers
             this.coreDbContext = coreDbContext;
         }
 
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public ActionResult Register(User user)
+        {
+            var hasher = new PasswordHasher<object>();
+            var passwordHash = hasher.HashPassword(null!, user.Password);
+            user.Password = passwordHash;
+
+            coreDbContext.Users.Add(user);
+            coreDbContext.SaveChanges();
+
+            return NoContent();
+        }
+
         [HttpPost("Login")]
         [AllowAnonymous]
         public ActionResult Login(LoginRequest request)
         {
+            var hasher = new PasswordHasher<object>();
+
             var user = coreDbContext
                 .Users
                 .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
-                .SingleOrDefault(u => u.Email == request.Email && u.Password == request.Password);
+                .SingleOrDefault(u => u.Email == request.Email);
 
             if(user == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = hasher.VerifyHashedPassword(
+                null!,
+                user.Password,
+                request.Password
+            );
+
+            if (result == PasswordVerificationResult.Failed)
             {
                 return Unauthorized();
             }
