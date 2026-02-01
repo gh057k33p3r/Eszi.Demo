@@ -10,3 +10,10 @@ export interface JwtData {
     | string
     | string[]; // amikor csak 1 van akkor sima string, amikor több akkor string[]
 }
+
+export interface Product {
+  id: number;
+  name: string;
+  description?: string | null;
+  price: number;
+}

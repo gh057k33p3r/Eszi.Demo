@@ -4,7 +4,8 @@ import { LoginForm } from "../components/LoginForm/LoginForm";
 import { Layout } from "../components/Layout/Layout";
 import { AuthenticatedLayout } from "../components/Layout/AuthenticatedLayout";
 import { AdminLayout } from "../components/Layout/AdminLayout";
-import { Admin } from "../components/Admin/Admin";
+import { Products } from "../components/Products/Products";
+import { ProductsAdmin } from "../components/Admin/ProductsAdmin";
 
 export const router = createBrowserRouter([
   {
@@ -28,10 +29,14 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        element: <Products />,
+        path: "/products",
+      },
+      {
         element: <AdminLayout />,
         children: [
           {
-            element: <Admin />,
+            element: <ProductsAdmin />,
             path: "/admin",
           },
         ],
