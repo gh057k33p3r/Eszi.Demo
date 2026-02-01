@@ -3,6 +3,8 @@ import App from "../App";
 import { LoginForm } from "../components/LoginForm/LoginForm";
 import { Layout } from "../components/Layout/Layout";
 import { AuthenticatedLayout } from "../components/Layout/AuthenticatedLayout";
+import { AdminLayout } from "../components/Layout/AdminLayout";
+import { Admin } from "../components/Admin/Admin";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +24,15 @@ export const router = createBrowserRouter([
           {
             element: <App />,
             path: "/weather-forecasts",
+          },
+        ],
+      },
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            element: <Admin />,
+            path: "/admin",
           },
         ],
       },

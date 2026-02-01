@@ -1,11 +1,15 @@
 ﻿using Eszi.Demo.Database;
+using Eszi.Demo.Database.Models;
 using Eszi.Demo.Server.Dtos.Auth;
 using Eszi.Demo.Server.Dtos.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -28,14 +32,18 @@ namespace Eszi.Demo.Server.Controllers
         [AllowAnonymous]
         public ActionResult Login(LoginRequest request)
         {
-            var user = coreDbContext.Users.SingleOrDefault(u => u.Email == request.Email && u.Password == request.Password);
+            var user = coreDbContext
+                .Users
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                .SingleOrDefault(u => u.Email == request.Email && u.Password == request.Password);
 
             if(user == null)
             {
                 return Unauthorized();
             }
 
-            var accessToken = GenerateJwtToken(request.Email);
+            var accessToken = GenerateJwtToken(user);
 
             var cookieOptions = new CookieOptions
             {
@@ -73,16 +81,19 @@ namespace Eszi.Demo.Server.Controllers
             return Ok();
         }
 
-        private string GenerateJwtToken(string email)
+        private string GenerateJwtToken(User user)
         {
             var jwt = options.Value;
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, email), // Ez kerül majd a HttpContext.User.Identity.Name -be
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Role, "User"),
+                new(ClaimTypes.Name, user.Email), // Ez kerül majd a HttpContext.User.Identity.Name -be
+                new(ClaimTypes.Email, user.Email),
+                new("firstName", user.FirstName),
+                new("lastName", user.LastName),
             };
+
+            claims.AddRange(user.UserRoles.Select(x => new Claim(ClaimTypes.Role, x.Role.Name)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
 

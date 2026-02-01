@@ -10,3 +10,10 @@ export const menuItems: MenuItem[] = [
     url: "/weather-forecasts",
   },
 ];
+
+export const adminMenuItems: MenuItem[] = [
+  {
+    label: "Admin",
+    url: "/admin",
+  },
+];
