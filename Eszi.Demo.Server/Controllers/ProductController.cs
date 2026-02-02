@@ -4,7 +4,6 @@ using Eszi.Demo.Server.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Eszi.Demo.Server.Controllers
 {
@@ -95,15 +94,10 @@ namespace Eszi.Demo.Server.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:long}")]
+        [HttpPut]
         [Authorize(Roles = BuiltInRoles.Admin)]
-        public async Task<ActionResult> Put(long id, ProductDto product) 
+        public async Task<ActionResult> Put(ProductDto product) 
         { 
-            if(id != product.Id)
-            {
-                return BadRequest("Id mismatch!");
-            }
-
             var existingProduct = await coreDbContext.Products.SingleOrDefaultAsync(p => p.Id == product.Id);
 
             if (existingProduct == null) 
