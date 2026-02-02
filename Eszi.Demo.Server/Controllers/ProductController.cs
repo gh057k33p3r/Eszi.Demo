@@ -1,5 +1,7 @@
 ﻿using Eszi.Demo.Database;
 using Eszi.Demo.Database.Models;
+using Eszi.Demo.Server.Dtos;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,21 +10,23 @@ namespace Eszi.Demo.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductController(CoreDbContext coreDbContext) : ControllerBase
+    public class ProductController(CoreDbContext coreDbContext, IMapper mapper) : ControllerBase
     {
         // Általában közvetlenül adatbázis entitást nem küldünk frontendre, ha marad idő megnézzük a mappelést
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
         {
             var products = await coreDbContext.Products.ToListAsync(); //veszélyes, memóriába betol mindent, az lenne a szép, ha egy filtert kapnánk paraméterben, a lehető legtovább IQueryable-ben kell tartani
 
-            return Ok(products);
+            var mapped = mapper.Map<List<ProductDto>>(products);
+
+            return Ok(mapped);
         }
 
         [Authorize]
         [HttpGet("{id:long}")]
-        public async Task<ActionResult<Product>> GetById(long id)
+        public async Task<ActionResult<ProductDto>> GetById(long id)
         {
             var product = await coreDbContext.Products
                 .SingleOrDefaultAsync(p => p.Id == id);
@@ -32,25 +36,27 @@ namespace Eszi.Demo.Server.Controllers
                 return NotFound();
             }
 
-            return Ok(product);
+            var mapped = mapper.Map<ProductDto>(product);
+
+            return Ok(mapped);
         }
 
         [HttpPost]
         [Authorize(Roles = BuiltInRoles.Admin)]
-        public async Task<ActionResult<Product>> Post(Product product) // Létrehozás
+        public async Task<ActionResult> Post(ProductDto product) // Létrehozás
         {
-            await coreDbContext.Products.AddAsync(product); // Ilyet soha
+            var mapped = mapper.Map<Product>(product);
+
+            await coreDbContext.Products.AddAsync(mapped); // Ilyet soha
             await coreDbContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
 
-        [HttpPut("{id:long}")]
+        [HttpPut]
         [Authorize(Roles = BuiltInRoles.Admin)]
-        public async Task<ActionResult<IEnumerable<Product>>> Put(long id, Product product) // Frissítés
+        public async Task<ActionResult> Put(ProductDto product) // Frissítés
         {
-            if (id != product.Id)
-                return BadRequest("Id mismatch");
 
             var existingProduct = await coreDbContext.Products.SingleOrDefaultAsync(p => p.Id == product.Id); // Ezt trackeli a dbContext
 
@@ -59,10 +65,12 @@ namespace Eszi.Demo.Server.Controllers
                 return NotFound();
             }
 
+            var mapped = mapper.Map<Product>(product);
+
             coreDbContext
                 .Entry(existingProduct)
                 .CurrentValues
-                .SetValues(product);
+                .SetValues(mapped);
 
             await coreDbContext.SaveChangesAsync();
 
@@ -71,7 +79,7 @@ namespace Eszi.Demo.Server.Controllers
 
         [HttpDelete("{id:long}")]
         [Authorize(Roles = BuiltInRoles.Admin)]
-        public async Task<ActionResult<IEnumerable<Product>>> Delete(long id)
+        public async Task<ActionResult> Delete(long id)
         {
             var product = await coreDbContext.Products.SingleOrDefaultAsync(p => p.Id == id);
 
