@@ -6,5 +6,5 @@ dotnet tool install --global dotnet-ef --version 8.*
 
 ## Add Migration
 <pre>
-dotnet ef migrations add Initial --project Eszi.Demo.Database --startup-project Eszi.Demo.Server --context CoreDbContext
+dotnet ef migrations add UserRoles --project Eszi.Demo.Database --startup-project Eszi.Demo.Server --context CoreDbContext
 </pre>
