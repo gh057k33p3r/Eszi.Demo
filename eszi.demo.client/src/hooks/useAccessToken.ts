@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../axios";
 
-export const useAccessToken = () => {
+export const useAccessToken = (enabled: boolean = true) => {
   const { data: accessToken, isLoading } = useQuery({
     queryKey: ["cookietoken"],
     queryFn: async () => {
@@ -12,6 +12,7 @@ export const useAccessToken = () => {
         return null;
       }
     },
+    enabled,
   });
   return {
     accessToken,
