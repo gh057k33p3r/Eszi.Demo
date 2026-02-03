@@ -1,6 +1,7 @@
 ﻿using Eszi.Demo.Database;
 using Eszi.Demo.Database.Models;
 using Eszi.Demo.Server.Dtos;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,20 +13,13 @@ namespace Eszi.Demo.Server.Controllers
     public class ProductController : ControllerBase
     {
         private readonly CoreDbContext coreDbContext;
+        private readonly IMapper mapper;
 
-        public ProductController(CoreDbContext coreDbContext)
+        public ProductController(CoreDbContext coreDbContext, IMapper mapper)
         {
             this.coreDbContext = coreDbContext;
+            this.mapper = mapper;
         }
-
-        // Mapper func
-        Func<Product, ProductDto> mapProductToDto = p => new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Description = p.Description,
-        };
 
         // GET product
         [HttpGet]
@@ -34,7 +28,7 @@ namespace Eszi.Demo.Server.Controllers
             // Nagyon vigyázni, mert a ToList memóriába tölt mindent. Célszerű szűrni és lapozni
             var products = await coreDbContext.Products.ToListAsync();
 
-            var mapped = products.Select(mapProductToDto);
+            var mapped = mapper.Map<List<ProductDto>>(products);
 
             return Ok(mapped);
         }
@@ -50,25 +44,16 @@ namespace Eszi.Demo.Server.Controllers
                 return NotFound();
             }
 
-            var mapped = mapProductToDto(product);
+            var mapped = mapper.Map<ProductDto>(product);
 
             return Ok(mapped);
         }
-
-        // Mapper func
-        Func<ProductDto, Product> mapProductDtoToProduct = p => new Product
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Description = p.Description,
-        };
 
         [HttpPost] // POST /product
         [Authorize(Roles = BuiltInRoles.Admin)] // Csak adminnak
         public async Task<ActionResult<Product>> Post(ProductDto product)
         {
-            var mapped = mapProductDtoToProduct(product);
+            var mapped = mapper.Map<Product>(product);
 
             await coreDbContext.Products.AddAsync(mapped);
             await coreDbContext.SaveChangesAsync();
@@ -105,9 +90,12 @@ namespace Eszi.Demo.Server.Controllers
                 return NotFound();
             }
 
-            existingProduct.Name = product.Name;
-            existingProduct.Description = product.Description;
-            existingProduct.Price = product.Price;
+            var mapped = mapper.Map<Product>(product);
+
+            coreDbContext
+                .Entry(existingProduct)
+                .CurrentValues
+                .SetValues(mapped);
 
             await coreDbContext.SaveChangesAsync();
 

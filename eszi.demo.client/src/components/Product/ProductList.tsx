@@ -2,15 +2,16 @@ import type { ProductDto } from "../../types";
 
 interface ProductListProps {
   products: ProductDto[];
+  renderItem?: (product: ProductDto) => React.ReactNode;
 }
 
-export function ProductList({ products }: ProductListProps) {
+export function ProductList({ products, renderItem }: ProductListProps) {
   return (
     <>
       {products.length > 0 ? (
         <ul>
           {products.map((p) => {
-            return <li key={p.id}>{p.name}</li>;
+            return <>{renderItem?.(p) ?? <li key={p.id}>{p.name}</li>}</>;
           })}
         </ul>
       ) : (
