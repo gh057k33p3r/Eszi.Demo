@@ -10,7 +10,7 @@ dotnet ef migrations add UserRoles --project Eszi.Demo.Database --startup-projec
 </pre>
 
 ## Roadmap (Miket érdemes tudni)
-- [React](https://roadmap.sh/reactroad)
+- [React](https://roadmap.sh/react)
 - [ASP.NET Core](https://roadmap.sh/aspnet-core)
 
 ## Hosting
