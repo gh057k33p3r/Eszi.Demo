@@ -1,6 +1,9 @@
+import type { ReactNode } from "react";
+
 export interface MenuItem {
   label: string;
   url: string;
+  icon: ReactNode;
 }
 
 export interface JwtData {
