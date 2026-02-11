@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { axiosInstance } from "./axios";
-import { useNotification } from "./hooks/useNotification/useNotification";
 
 interface Forecast {
   date: string;
