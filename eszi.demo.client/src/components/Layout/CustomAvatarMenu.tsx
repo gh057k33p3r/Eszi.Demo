@@ -5,8 +5,17 @@ import { axiosInstance } from "../../axios";
 import { useNavigate } from "react-router";
 import { useAccessToken } from "../../hooks/useAccessToken";
 import { useAccount } from "../../hooks/useAccount";
+import CustomModal from "../CustomModal/CustomModal";
 
 export function CustomAvatarMenu() {
+  const navigate = useNavigate();
+
+  const { accessToken } = useAccessToken();
+
+  const { data } = useAccount();
+
+  const [logoutModalOpen, setLogoutModalOpen] = useState<boolean>(false);
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -25,16 +34,17 @@ export function CustomAvatarMenu() {
   const queryClient = useQueryClient();
 
   const handleLogoutClick = async () => {
-    await logoutAsync();
-    queryClient.invalidateQueries();
-    handleClose();
+    setLogoutModalOpen(true);
   };
 
-  const navigate = useNavigate();
+  const handleLogoutModalClose = async (result: boolean) => {
+    if (result) {
+      await logoutAsync();
+      queryClient.invalidateQueries();
+    }
 
-  const { accessToken } = useAccessToken();
-
-  const { data } = useAccount();
+    setLogoutModalOpen(false);
+  };
 
   return (
     <>
@@ -66,6 +76,11 @@ export function CustomAvatarMenu() {
           <MenuItem onClick={handleLogoutClick}>Kijelentkezés</MenuItem>
         )}
       </Menu>
+      <CustomModal
+        handleClose={handleLogoutModalClose}
+        isOpen={logoutModalOpen}
+        label="Kijelentkezés"
+      />
     </>
   );
 }
