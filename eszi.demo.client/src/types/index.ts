@@ -20,3 +20,10 @@ export interface ProductDto {
   description?: string | null;
   price: number;
 }
+
+export interface LoginRequest {
+  Email: string;
+  Password: string;
+}
+
+export interface ApiFunctionsContext {}

@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router";
 import App from "../App";
-import { LoginForm } from "../components/LoginForm/LoginForm";
 import { Layout } from "../components/Layout/Layout";
 import { AuthenticatedLayout } from "../components/Layout/AuthenticatedLayout";
 import { AdminLayout } from "../components/Layout/AdminLayout";
 import { Products } from "../components/Product/Products";
 import { ProductAdmin } from "../components/Admin/ProductAdmin";
+import { CustomLoginForm } from "../components/LoginForm/CustomLoginForm";
 
 export const router = createBrowserRouter([
   {
@@ -16,7 +16,7 @@ export const router = createBrowserRouter([
         path: "/",
       },
       {
-        element: <LoginForm />,
+        element: <CustomLoginForm />,
         path: "/login",
       },
       {
