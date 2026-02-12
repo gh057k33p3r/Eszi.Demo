@@ -1,4 +1,14 @@
 body{
     margin:0;
     padding:0;
+     background-color: #ddd;
+}
+
+.content-box {
+  margin: 60px auto 30px;
+  width: 70%;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding:20px
 }
