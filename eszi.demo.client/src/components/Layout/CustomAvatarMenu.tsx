@@ -12,7 +12,7 @@ export function CustomAvatarMenu() {
 
   const { accessToken } = useAccessToken();
 
-  const { data } = useAccount();
+  const { data, isAdmin } = useAccount();
 
   const [logoutModalOpen, setLogoutModalOpen] = useState<boolean>(false);
 
@@ -42,7 +42,6 @@ export function CustomAvatarMenu() {
       await logoutAsync();
       queryClient.invalidateQueries();
     }
-
     setLogoutModalOpen(false);
   };
 
@@ -54,7 +53,7 @@ export function CustomAvatarMenu() {
             !accessToken ? "Anonymous" : `${data?.firstName} ${data?.lastName}`
           }
         >
-          <Avatar>
+          <Avatar sx={{ backgroundColor: isAdmin ? "gold" : "#ddd" }}>
             {accessToken ? `${data?.firstName[0]}${data?.lastName[0]}` : "A"}
           </Avatar>
         </Tooltip>
